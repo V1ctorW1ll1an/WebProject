@@ -5,8 +5,6 @@ VisualStudioVersion = 25.0.1705.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{782ED0AA-BAE7-42C8-823E-EB5E8EF2BDA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProjectUnitTest", "WebProjectUnitTest\WebProjectUnitTest.csproj", "{40ED0F70-09E0-4AB0-956E-39C098DEED43}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
