@@ -12,7 +12,6 @@ public class LoginController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IFuncionarioService _funcionarioService;
 
-    // TODO #2 Inject FuncionarioRepository
     public LoginController(IFuncionarioService funcionarioService, ITokenService tokenService)
     {
         _tokenService = tokenService;
