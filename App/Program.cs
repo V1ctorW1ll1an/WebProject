@@ -1,4 +1,11 @@
-﻿using App.Services;
+﻿using System.Text;
+using App;
+using App.Repositories;
+using App.Repositories.Interfaces;
+using App.Services;
+using App.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +29,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -30,5 +38,28 @@ app.Run();
 
 void ConfigureServices(IServiceCollection services)
 {
-    services.AddTransient<IUserService, UserService>();
+    // dependencies injection
+    services.AddScoped<ITokenService, TokenService>();
+    services.AddScoped<IFuncionarioService, FuncionarioService>();
+    services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
+
+    var key = Encoding.ASCII.GetBytes(Settings.Secret);
+    services
+        .AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(x =>
+        {
+            x.RequireHttpsMetadata = false;
+            x.SaveToken = true;
+            x.TokenValidationParameters = new()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+        });
 }
