@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using App.Services.Interfaces;
 using App.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.Controllers;
 
@@ -20,6 +21,7 @@ public class LoginController : ControllerBase
 
     [HttpPost]
     [Route("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<dynamic>> AuthenticateAsync(
         [FromBody] FuncionarioLoginInput funcionarioForm
     )
