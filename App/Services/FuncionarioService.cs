@@ -5,52 +5,65 @@ using App.Services.Exceptions;
 using App.Services.Interfaces;
 
 namespace App.Services;
+
 public class FuncionarioService : IFuncionarioService
 {
-  private readonly IFuncionarioRepository _userRepository;
-  private readonly ICargoService _cargoService;
+    private readonly IFuncionarioRepository _userRepository;
+    private readonly ICargoService _cargoService;
 
-  public FuncionarioService(IFuncionarioRepository userRepository, ICargoService cargoService)
-  {
-    _userRepository = userRepository;
-    _cargoService = cargoService;
-  }
+    public FuncionarioService(IFuncionarioRepository userRepository, ICargoService cargoService)
+    {
+        _userRepository = userRepository;
+        _cargoService = cargoService;
+    }
 
-  public async Task<Funcionario> AutenticarFuncionario(LoginFuncionario funcionarioInput)
-  {
-    var funcionario = await _userRepository.BuscarFuncionarioPeloEmailESenha(funcionarioInput.Email, funcionarioInput.Senha);
+    public async Task<Funcionario> AutenticarFuncionario(LoginFuncionario funcionarioInput)
+    {
+        var funcionario = await _userRepository.BuscarFuncionarioPeloEmailESenha(
+            funcionarioInput.Email,
+            funcionarioInput.Senha
+        );
 
-    return funcionario;
-  }
+        if (funcionario == null)
+            throw new FuncionarioNaoEncontrado(
+                "Não foi possível encontrar um funcionário com o e-mail e senha informados"
+            );
 
-  public async Task<Funcionario> CadastrarFuncionario(CadastrarFuncionario funcionarioInput)
-  {
-    var funcionarioExistente = await _userRepository.BuscarFuncionarioPeloEmail(funcionarioInput.Email);
-    if (funcionarioExistente != null)
-      throw new EmailJaCadastrado("Este e-mail já está cadastrado no sistema");
+        return funcionario;
+    }
 
-    var cargo = await _cargoService.BuscarCargoPeloId(funcionarioInput.CargoId);
-    if (cargo == null)
-      throw new CargoNaoEncontrado("Não foi possível encontrar o cargo informado");
+    public async Task<Funcionario> CadastrarFuncionario(CadastrarFuncionario funcionarioInput)
+    {
+        var funcionarioExistente = await _userRepository.BuscarFuncionarioPeloEmail(
+            funcionarioInput.Email
+        );
+        if (funcionarioExistente != null)
+            throw new EmailJaCadastrado("Este e-mail já está cadastrado no sistema");
 
-    var novoFuncionario = new Funcionario(
-        id: null,
-        nome: funcionarioInput.Nome,
-        email: funcionarioInput.Email,
-        senha: funcionarioInput.Senha,
-        cargo: cargo
-    );
+        var cargo = await _cargoService.BuscarCargoPeloId(funcionarioInput.CargoId);
+        if (cargo == null)
+            throw new CargoNaoEncontrado("Não foi possível encontrar o cargo informado");
 
-    var funcionarioCadastrado = await _userRepository.CadastrarFuncionario(novoFuncionario);
-    if (funcionarioCadastrado == null)
-      throw new ErroCadastrarFuncionarioDB("Não foi possível cadastrar o funcionário no banco de dados");
+        var novoFuncionario = new Funcionario(
+            id: null,
+            nome: funcionarioInput.Nome,
+            email: funcionarioInput.Email,
+            senha: funcionarioInput.Senha,
+            cargo: cargo
+        );
 
-    return new Funcionario(
-        id: funcionarioCadastrado.Id,
-        nome: funcionarioCadastrado.Nome,
-        email: funcionarioCadastrado.Email,
-        senha: null,
-        cargo: funcionarioCadastrado.Cargo
-    );
-  }
+        var funcionarioCadastrado = await _userRepository.CadastrarFuncionario(novoFuncionario);
+        if (funcionarioCadastrado == null)
+            throw new ErroCadastrarFuncionarioDB(
+                "Não foi possível cadastrar o funcionário no banco de dados"
+            );
+
+        return new Funcionario(
+            id: funcionarioCadastrado.Id,
+            nome: funcionarioCadastrado.Nome,
+            email: funcionarioCadastrado.Email,
+            senha: null,
+            cargo: funcionarioCadastrado.Cargo
+        );
+    }
 }
