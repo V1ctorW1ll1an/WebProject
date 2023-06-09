@@ -1,4 +1,5 @@
 ﻿using App.Dto;
+using App.Repositories.Exceptions;
 using App.Services.Exceptions;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,19 @@ namespace App.Controllers
             try
             {
                 var funcionario = await _funcionarioService.CadastrarFuncionario(funcionarioForm);
-                return Ok(new { funcionario, mensagem = "Funcionário cadastrado com sucesso" });
+                return Ok(
+                    new
+                    {
+                        funcionario = new
+                        {
+                            funcionario.Id,
+                            funcionario.Nome,
+                            funcionario.Email,
+                            funcionario.Cargo
+                        },
+                        mensagem = "Funcionário cadastrado com sucesso"
+                    }
+                );
             }
             catch (EmailJaCadastrado e)
             {
@@ -48,6 +61,36 @@ namespace App.Controllers
             catch (Exception)
             {
                 var errorMessage = "Erro ao cadastrar funcionário";
+                _logger.LogError(errorMessage);
+                return BadRequest(new { mensagem = errorMessage });
+            }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<dynamic>> AtualizarFuncionarioAsync(
+            [FromBody] AtualizarFuncionario funcionarioForm
+        )
+        {
+            try
+            {
+                var funcionario = await _funcionarioService.AtualizarFuncionario(funcionarioForm);
+                return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
+            }
+            catch (FuncionarioNaoEncontrado e)
+            {
+                return BadRequest(new { mensagem = e.Message });
+            }
+            catch (CargoNaoEncontrado e)
+            {
+                return BadRequest(new { mensagem = e.Message });
+            }
+            catch (ErroAtualizarFuncionarioDB e)
+            {
+                return BadRequest(new { mensagem = e.Message });
+            }
+            catch (Exception)
+            {
+                var errorMessage = "Erro ao atualizar funcionário";
                 _logger.LogError(errorMessage);
                 return BadRequest(new { mensagem = errorMessage });
             }
