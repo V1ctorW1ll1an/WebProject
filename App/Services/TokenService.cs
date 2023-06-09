@@ -9,27 +9,26 @@ namespace App.Services;
 
 public class TokenService : ITokenService
 {
-    public string GenerateToken(Funcionario funcionario)
+  public string GenerateToken(Funcionario funcionario)
+  {
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var key = Encoding.ASCII.GetBytes(Settings.Secret);
+    var tokenDescriptor = new SecurityTokenDescriptor
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(Settings.Secret);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(
-                new Claim[]
-                {
-                    new Claim("id", funcionario.Id.ToString()), // User.FindFirst("id").Value
+      Subject = new ClaimsIdentity(
+            new Claim[]
+            {
                     new Claim(ClaimTypes.Name, funcionario.Nome.ToString()), // User.Identity.Name
-                    new Claim(ClaimTypes.Role, funcionario.Cargo.Id.ToString()) // User.IsInRole("1")
-                }
-            ),
-            Expires = DateTime.UtcNow.AddHours(40),
-            SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature
-            )
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
+                    new Claim(ClaimTypes.Role, funcionario.Cargo.Nome.ToString()) // User.IsInRole("1")
+            }
+        ),
+      Expires = DateTime.UtcNow.AddHours(40),
+      SigningCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(key),
+            SecurityAlgorithms.HmacSha256Signature
+        )
+    };
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+  }
 }

@@ -5,5 +5,6 @@ namespace App.Services.Interfaces;
 
 public interface IFuncionarioService
 {
-    public Task<Funcionario> AutenticarFuncionario(FuncionarioLoginInput funcionarioInput);
+  public Task<Funcionario> AutenticarFuncionario(LoginFuncionario funcionarioInput);
+  public Task<Funcionario> CadastrarFuncionario(CadastrarFuncionario funcionarioInput);
 }
