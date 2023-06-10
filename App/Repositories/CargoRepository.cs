@@ -1,19 +1,37 @@
 using App.Entities;
 using App.Repositories.Interfaces;
+using Dapper;
+using Npgsql;
 
 namespace App.Repositories;
 
 public class CargoRepository : ICargoRepository
 {
-    public static List<Cargo> Cargos = new List<Cargo>
-    {
-        new Cargo(1, "Admin"),
-        new Cargo(2, "Funcionario"),
-    };
+    private readonly ILogger<CargoRepository> _logger;
 
-    public Task<Cargo> BuscarCargoPeloId(int id)
+    public CargoRepository(ILogger<CargoRepository> logger)
     {
-        var cargo = Cargos.FirstOrDefault(cargo => cargo.Id == id);
-        return Task.FromResult<Cargo>(cargo);
+        _logger = logger;
+    }
+
+    // TODO: #8 Find from database
+    public async Task<Cargo> BuscarCargoPeloId(int id)
+    {
+        try
+        {
+            var connectionString = Settings.GetConnectionString();
+            var query = "SELECT * FROM cargo WHERE id = @id";
+
+            using var connection = new NpgsqlConnection(connectionString);
+
+            var cargo = await connection.QueryFirstOrDefaultAsync<Cargo>(query, new { id });
+
+            return cargo;
+        }
+        catch (System.Exception e)
+        {
+            _logger.LogError(e, "Erro ao buscar cargo pelo id");
+            throw;
+        }
     }
 }
