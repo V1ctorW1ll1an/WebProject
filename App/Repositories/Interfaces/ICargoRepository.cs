@@ -1,8 +1,9 @@
 using App.Entities;
+using App.Repositories.Results;
 
 namespace App.Repositories.Interfaces;
 
 public interface ICargoRepository
 {
-  Task<Cargo> BuscarCargoPeloId(int id);
+    Task<DbResult<CargoEntity>> BuscarCargoPeloId(int id);
 }

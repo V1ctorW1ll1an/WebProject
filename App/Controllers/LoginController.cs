@@ -2,33 +2,35 @@ using Microsoft.AspNetCore.Mvc;
 using App.Services.Interfaces;
 using App.Dto;
 using Microsoft.AspNetCore.Authorization;
-using App.Services.Exceptions;
 
-namespace App.Controllers;
-
-[ApiController]
-[Route("/api")]
-public class LoginController : ControllerBase
+namespace App.Controllers
 {
-    private readonly ITokenService _tokenService;
-    private readonly IFuncionarioService _funcionarioService;
-
-    public LoginController(IFuncionarioService funcionarioService, ITokenService tokenService)
+    [ApiController]
+    [Route("/api")]
+    public class LoginController : ControllerBase
     {
-        _tokenService = tokenService;
-        _funcionarioService = funcionarioService;
-    }
+        private readonly ITokenService _tokenService;
+        private readonly IFuncionarioService _funcionarioService;
 
-    [HttpPost]
-    [Route("login")]
-    [AllowAnonymous]
-    public async Task<ActionResult<dynamic>> AuthenticateAsync(
-        [FromBody] LoginFuncionario funcionarioForm
-    )
-    {
-        try
+        public LoginController(IFuncionarioService funcionarioService, ITokenService tokenService)
         {
-            var funcionario = await _funcionarioService.AutenticarFuncionario(funcionarioForm);
+            _tokenService = tokenService;
+            _funcionarioService = funcionarioService;
+        }
+
+        [HttpPost]
+        [Route("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult<dynamic>> AuthenticateAsync(
+            [FromBody] LoginFuncionario funcionarioForm
+        )
+        {
+            var resultado = await _funcionarioService.AutenticarFuncionario(funcionarioForm);
+
+            if (!resultado.IsSuccess)
+                return BadRequest(new { mensagem = resultado.ErrorMessage });
+
+            var funcionario = resultado.Value;
 
             var token = _tokenService.GenerateToken(funcionario);
 
@@ -41,16 +43,6 @@ public class LoginController : ControllerBase
             };
 
             return new { funcionario = novoFuncionario, token };
-        }
-        catch (FuncionarioNaoEncontrado e)
-        {
-            return BadRequest(new { mensagem = e.Message });
-        }
-        catch (System.Exception)
-        {
-            return Task.FromResult<ActionResult<dynamic>>(
-                BadRequest(new { mensagem = "Erro ao autenticar funcionário" })
-            );
         }
     }
 }
