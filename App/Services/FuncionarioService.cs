@@ -10,14 +10,17 @@ namespace App.Services
     {
         private readonly IFuncionarioRepository _FuncionarioRepository;
         private readonly ICargoService _cargoService;
+        private readonly ICryptoService _cryptoService;
 
         public FuncionarioService(
             IFuncionarioRepository FuncionarioRepository,
-            ICargoService cargoService
+            ICargoService cargoService,
+            ICryptoService cryptoService
         )
         {
             _FuncionarioRepository = FuncionarioRepository;
             _cargoService = cargoService;
+            _cryptoService = cryptoService;
         }
 
         public async Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionario(
@@ -64,15 +67,20 @@ namespace App.Services
             LoginFuncionario funcionarioInput
         )
         {
-            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloEmailESenha(
-                funcionarioInput.Email,
-                funcionarioInput.Senha
+            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloEmail(
+                funcionarioInput.Email
             );
 
-            if (funcionario is null)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Não foi possível encontrar um funcionário com o e-mail e senha informados"
-                );
+            if (funcionario is null || funcionario.Value.Senha is null)
+                return ServiceResult<FuncionarioEntity>.Failure("Usuário ou senha inválidos");
+
+            var senhaValida = _cryptoService.VerifyPassword(
+                funcionarioInput.Senha,
+                funcionario.Value.Senha
+            );
+
+            if (!senhaValida.IsSuccess)
+                return ServiceResult<FuncionarioEntity>.Failure("Usuário ou senha inválidos");
 
             return ServiceResult<FuncionarioEntity>.Success(
                 new FuncionarioEntity(
@@ -107,11 +115,10 @@ namespace App.Services
                 id: null,
                 nome: funcionarioInput.Nome,
                 email: funcionarioInput.Email,
-                senha: funcionarioInput.Senha,
+                senha: _cryptoService.HashPassword(funcionarioInput.Senha).Value,
                 cargo: cargo.Value
             );
 
-            // TODO: Implement password hashing in other PR
             var funcionarioCadastrado = await _FuncionarioRepository.CadastrarFuncionario(
                 novoFuncionario
             );

@@ -46,6 +46,7 @@ void ConfigureServices(IServiceCollection services)
     // Cargo
     services.AddScoped<ICargoService, CargoService>();
     services.AddScoped<ICargoRepository, CargoRepository>();
+    services.AddScoped<ICryptoService, Argon2Service>();
 
     var key = Encoding.ASCII.GetBytes(Settings.Secret);
     services
