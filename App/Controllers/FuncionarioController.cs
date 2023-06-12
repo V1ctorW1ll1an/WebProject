@@ -1,6 +1,4 @@
 ﻿using App.Dto;
-using App.Repositories.Exceptions;
-using App.Services.Exceptions;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,41 +27,25 @@ namespace App.Controllers
             [FromBody] CadastrarFuncionario funcionarioForm
         )
         {
-            try
-            {
-                var funcionario = await _funcionarioService.CadastrarFuncionario(funcionarioForm);
-                return Ok(
-                    new
+            var resultado = await _funcionarioService.CadastrarFuncionario(funcionarioForm);
+
+            if (!resultado.IsSuccess)
+                return BadRequest(new { mensagem = resultado.ErrorMessage });
+
+            var funcionario = resultado.Value;
+            return Ok(
+                new
+                {
+                    funcionario = new
                     {
-                        funcionario = new
-                        {
-                            funcionario.Id,
-                            funcionario.Nome,
-                            funcionario.Email,
-                            funcionario.Cargo
-                        },
-                        mensagem = "Funcionário cadastrado com sucesso"
-                    }
-                );
-            }
-            catch (EmailJaCadastrado e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (CargoNaoEncontrado e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (ErroCadastrarFuncionarioDB e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "Erro ao cadastrar funcionário";
-                _logger.LogError(errorMessage);
-                return BadRequest(new { mensagem = errorMessage });
-            }
+                        funcionario.Id,
+                        funcionario.Nome,
+                        funcionario.Email,
+                        funcionario.Cargo
+                    },
+                    mensagem = "Funcionário cadastrado com sucesso"
+                }
+            );
         }
 
         [HttpPut]
@@ -71,29 +53,13 @@ namespace App.Controllers
             [FromBody] AtualizarFuncionario funcionarioForm
         )
         {
-            try
-            {
-                var funcionario = await _funcionarioService.AtualizarFuncionario(funcionarioForm);
-                return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
-            }
-            catch (FuncionarioNaoEncontrado e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (CargoNaoEncontrado e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (ErroAtualizarFuncionarioDB e)
-            {
-                return BadRequest(new { mensagem = e.Message });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "Erro ao atualizar funcionário";
-                _logger.LogError(errorMessage);
-                return BadRequest(new { mensagem = errorMessage });
-            }
+            var resultado = await _funcionarioService.AtualizarFuncionario(funcionarioForm);
+
+            if (!resultado.IsSuccess)
+                return BadRequest(new { mensagem = resultado.ErrorMessage });
+
+            var funcionario = resultado.Value;
+            return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
         }
     }
 }
