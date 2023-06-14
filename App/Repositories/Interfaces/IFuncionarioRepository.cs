@@ -5,14 +5,16 @@ namespace App.Repositories.Interfaces;
 
 public interface IFuncionarioRepository
 {
-    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmail(string email);
-    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailESenha(
+    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailAsync(string email);
+    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailESenhaAsync(
         string email,
         string senha
     );
-    public Task<DbResult<FuncionarioEntity>> CadastrarFuncionario(FuncionarioEntity funcionario);
-    public Task<DbResult<FuncionarioEntity>> AtualizarDadosDoFuncionario(
+    public Task<DbResult<FuncionarioEntity>> CadastrarFuncionarioAsync(
         FuncionarioEntity funcionario
     );
-    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloId(int id);
+    public Task<DbResult<FuncionarioEntity>> AtualizarDadosDoFuncionarioAsync(
+        FuncionarioEntity funcionario
+    );
+    public Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloIdAsync(int id);
 }

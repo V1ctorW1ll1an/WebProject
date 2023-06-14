@@ -25,7 +25,7 @@ namespace App.Controllers
             [FromBody] LoginFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.AutenticarFuncionario(funcionarioForm);
+            var resultado = await _funcionarioService.AutenticarFuncionarioAsync(funcionarioForm);
 
             if (!resultado.IsSuccess)
                 return BadRequest(new { mensagem = resultado.ErrorMessage });

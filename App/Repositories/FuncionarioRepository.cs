@@ -16,7 +16,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         _logger = logger;
     }
 
-    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmail(string email)
+    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailAsync(string email)
     {
         try
         {
@@ -53,7 +53,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         }
     }
 
-    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailESenha(
+    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloEmailESenhaAsync(
         string email,
         string senha
     )
@@ -91,7 +91,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         }
     }
 
-    public async Task<DbResult<FuncionarioEntity>> CadastrarFuncionario(
+    public async Task<DbResult<FuncionarioEntity>> CadastrarFuncionarioAsync(
         FuncionarioEntity funcionario
     )
     {
@@ -131,7 +131,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         }
     }
 
-    public async Task<DbResult<FuncionarioEntity>> AtualizarDadosDoFuncionario(
+    public async Task<DbResult<FuncionarioEntity>> AtualizarDadosDoFuncionarioAsync(
         FuncionarioEntity funcionario
     )
     {
@@ -166,7 +166,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         }
     }
 
-    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloId(int id)
+    public async Task<DbResult<FuncionarioEntity>> BuscarFuncionarioPeloIdAsync(int id)
     {
         try
         {

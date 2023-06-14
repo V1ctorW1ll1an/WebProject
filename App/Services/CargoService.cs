@@ -14,9 +14,9 @@ public class CargoService : ICargoService
         _cargoRepository = cargoRepository;
     }
 
-    public async Task<ServiceResult<CargoEntity>> BuscarCargoPeloId(int id)
+    public async Task<ServiceResult<CargoEntity>> BuscarCargoPeloIdAsync(int id)
     {
-        var cargo = await _cargoRepository.BuscarCargoPeloId(id);
+        var cargo = await _cargoRepository.BuscarCargoPeloIdAsync(id);
 
         if (!cargo.IsSuccess)
             return ServiceResult<CargoEntity>.Failure("Cargo não encontrado");

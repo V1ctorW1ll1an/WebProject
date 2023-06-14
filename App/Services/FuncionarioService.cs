@@ -23,11 +23,11 @@ namespace App.Services
             _cryptoService = cryptoService;
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionario(
+        public async Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionarioAsync(
             AtualizarFuncionario funcionarioInput
         )
         {
-            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloId(
+            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloIdAsync(
                 funcionarioInput.Id
             );
             if (funcionario is null)
@@ -35,7 +35,7 @@ namespace App.Services
                     "O Funcionário informado não existe em nosso sistema"
                 );
 
-            var cargo = await _cargoService.BuscarCargoPeloId(funcionarioInput.CargoId);
+            var cargo = await _cargoService.BuscarCargoPeloIdAsync(funcionarioInput.CargoId);
             if (cargo is null)
                 return ServiceResult<FuncionarioEntity>.Failure(
                     "Não foi possível encontrar o cargo informado"
@@ -43,9 +43,8 @@ namespace App.Services
 
             funcionario.Value.Cargo = cargo.Value;
             funcionario.Value.Nome = funcionarioInput.Nome;
-            var funcionarioAtualizado = await _FuncionarioRepository.AtualizarDadosDoFuncionario(
-                funcionario.Value
-            );
+            var funcionarioAtualizado =
+                await _FuncionarioRepository.AtualizarDadosDoFuncionarioAsync(funcionario.Value);
 
             if (funcionarioAtualizado is null)
                 return ServiceResult<FuncionarioEntity>.Failure(
@@ -63,11 +62,11 @@ namespace App.Services
             );
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> AutenticarFuncionario(
+        public async Task<ServiceResult<FuncionarioEntity>> AutenticarFuncionarioAsync(
             LoginFuncionario funcionarioInput
         )
         {
-            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloEmail(
+            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloEmailAsync(
                 funcionarioInput.Email
             );
 
@@ -93,11 +92,11 @@ namespace App.Services
             );
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> CadastrarFuncionario(
+        public async Task<ServiceResult<FuncionarioEntity>> CadastrarFuncionarioAsync(
             CadastrarFuncionario funcionarioInput
         )
         {
-            var funcionarioExistente = await _FuncionarioRepository.BuscarFuncionarioPeloEmail(
+            var funcionarioExistente = await _FuncionarioRepository.BuscarFuncionarioPeloEmailAsync(
                 funcionarioInput.Email
             );
             if (funcionarioExistente.Value is not null)
@@ -105,7 +104,7 @@ namespace App.Services
                     "Este e-mail já está cadastrado no sistema"
                 );
 
-            var cargo = await _cargoService.BuscarCargoPeloId(funcionarioInput.CargoId);
+            var cargo = await _cargoService.BuscarCargoPeloIdAsync(funcionarioInput.CargoId);
             if (cargo.Value is null)
                 return ServiceResult<FuncionarioEntity>.Failure(
                     "Não foi possível encontrar o cargo informado"
@@ -119,7 +118,7 @@ namespace App.Services
                 cargo: cargo.Value
             );
 
-            var funcionarioCadastrado = await _FuncionarioRepository.CadastrarFuncionario(
+            var funcionarioCadastrado = await _FuncionarioRepository.CadastrarFuncionarioAsync(
                 novoFuncionario
             );
 

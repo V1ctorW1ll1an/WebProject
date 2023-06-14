@@ -5,5 +5,5 @@ namespace App.Repositories.Interfaces;
 
 public interface ICargoRepository
 {
-    Task<DbResult<CargoEntity>> BuscarCargoPeloId(int id);
+    Task<DbResult<CargoEntity>> BuscarCargoPeloIdAsync(int id);
 }

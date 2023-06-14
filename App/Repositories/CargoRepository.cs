@@ -15,7 +15,7 @@ public class CargoRepository : ICargoRepository
         _logger = logger;
     }
 
-    public async Task<DbResult<CargoEntity>> BuscarCargoPeloId(int id)
+    public async Task<DbResult<CargoEntity>> BuscarCargoPeloIdAsync(int id)
     {
         try
         {

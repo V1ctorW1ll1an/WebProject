@@ -27,7 +27,7 @@ namespace App.Controllers
             [FromBody] CadastrarFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.CadastrarFuncionario(funcionarioForm);
+            var resultado = await _funcionarioService.CadastrarFuncionarioAsync(funcionarioForm);
 
             if (!resultado.IsSuccess)
                 return BadRequest(new { mensagem = resultado.ErrorMessage });
@@ -53,7 +53,7 @@ namespace App.Controllers
             [FromBody] AtualizarFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.AtualizarFuncionario(funcionarioForm);
+            var resultado = await _funcionarioService.AtualizarFuncionarioAsync(funcionarioForm);
 
             if (!resultado.IsSuccess)
                 return BadRequest(new { mensagem = resultado.ErrorMessage });
