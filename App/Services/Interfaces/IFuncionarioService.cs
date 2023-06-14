@@ -6,13 +6,13 @@ namespace App.Services.Interfaces;
 
 public interface IFuncionarioService
 {
-    public Task<ServiceResult<FuncionarioEntity>> AutenticarFuncionario(
+    public Task<ServiceResult<FuncionarioEntity>> AutenticarFuncionarioAsync(
         LoginFuncionario funcionarioInput
     );
-    public Task<ServiceResult<FuncionarioEntity>> CadastrarFuncionario(
+    public Task<ServiceResult<FuncionarioEntity>> CadastrarFuncionarioAsync(
         CadastrarFuncionario funcionarioInput
     );
-    public Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionario(
+    public Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionarioAsync(
         AtualizarFuncionario funcionarioInput
     );
 }

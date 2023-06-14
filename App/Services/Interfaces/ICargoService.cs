@@ -5,5 +5,5 @@ namespace App.Services.Interfaces;
 
 public interface ICargoService
 {
-    public Task<ServiceResult<CargoEntity>> BuscarCargoPeloId(int id);
+    public Task<ServiceResult<CargoEntity>> BuscarCargoPeloIdAsync(int id);
 }
