@@ -25,24 +25,33 @@ namespace App.Controllers
             [FromBody] LoginFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.AutenticarFuncionarioAsync(funcionarioForm);
-
-            if (!resultado.IsSuccess)
-                return BadRequest(new { mensagem = resultado.ErrorMessage });
-
-            var funcionario = resultado.Value;
-
-            var token = _tokenService.GenerateToken(funcionario);
-
-            var novoFuncionario = new
+            try
             {
-                funcionario.Id,
-                funcionario.Nome,
-                funcionario.Email,
-                funcionario.Cargo,
-            };
+                var resultado = await _funcionarioService.AutenticarFuncionarioAsync(
+                    funcionarioForm
+                );
 
-            return new { funcionario = novoFuncionario, token };
+                if (!resultado.IsSuccess)
+                    return BadRequest(new { mensagem = resultado.ErrorMessage });
+
+                var funcionario = resultado.Value;
+
+                var token = _tokenService.GenerateToken(funcionario);
+
+                var novoFuncionario = new
+                {
+                    funcionario.Id,
+                    funcionario.Nome,
+                    funcionario.Email,
+                    funcionario.Cargo,
+                };
+
+                return new { funcionario = novoFuncionario, token };
+            }
+            catch (System.Exception)
+            {
+                return BadRequest(new { mensagem = "Erro ao autenticar funcionário" });
+            }
         }
     }
 }

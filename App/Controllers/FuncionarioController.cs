@@ -27,25 +27,34 @@ namespace App.Controllers
             [FromBody] CadastrarFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.CadastrarFuncionarioAsync(funcionarioForm);
+            try
+            {
+                var resultado = await _funcionarioService.CadastrarFuncionarioAsync(
+                    funcionarioForm
+                );
 
-            if (!resultado.IsSuccess)
-                return BadRequest(new { mensagem = resultado.ErrorMessage });
+                if (!resultado.IsSuccess)
+                    return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-            var funcionario = resultado.Value;
-            return Ok(
-                new
-                {
-                    funcionario = new
+                var funcionario = resultado.Value;
+                return Ok(
+                    new
                     {
-                        funcionario.Id,
-                        funcionario.Nome,
-                        funcionario.Email,
-                        funcionario.Cargo
-                    },
-                    mensagem = "Funcionário cadastrado com sucesso"
-                }
-            );
+                        funcionario = new
+                        {
+                            funcionario.Id,
+                            funcionario.Nome,
+                            funcionario.Email,
+                            funcionario.Cargo
+                        },
+                        mensagem = "Funcionário cadastrado com sucesso"
+                    }
+                );
+            }
+            catch (System.Exception)
+            {
+                return BadRequest(new { mensagem = "Erro ao cadastrar funcionário" });
+            }
         }
 
         [HttpPut]
@@ -53,13 +62,22 @@ namespace App.Controllers
             [FromBody] AtualizarFuncionario funcionarioForm
         )
         {
-            var resultado = await _funcionarioService.AtualizarFuncionarioAsync(funcionarioForm);
+            try
+            {
+                var resultado = await _funcionarioService.AtualizarFuncionarioAsync(
+                    funcionarioForm
+                );
 
-            if (!resultado.IsSuccess)
-                return BadRequest(new { mensagem = resultado.ErrorMessage });
+                if (!resultado.IsSuccess)
+                    return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-            var funcionario = resultado.Value;
-            return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
+                var funcionario = resultado.Value;
+                return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
+            }
+            catch (System.Exception)
+            {
+                return BadRequest(new { mensagem = "Erro ao atualizar funcionário" });
+            }
         }
     }
 }
