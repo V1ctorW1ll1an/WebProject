@@ -12,4 +12,4 @@ Agradeço por visitar este repo, espero que encontre algo interessante e útil a
 
 ✨ Espero que você encontre inspiração e motivação aqui, assim como eu encontrei em outros perfis do GitHub. Juntos, podemos construir uma comunidade de desenvolvedores dedicados à aprendizagem contínua e ao compartilhamento de conhecimento.
 
-Aproveite sua visita e obrigado por apoiar minha jornada de aprendizado!
+
