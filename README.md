@@ -12,4 +12,6 @@ Agradeço por visitar este repo, espero que encontre algo interessante e útil a
 
 ✨ Espero que você encontre inspiração e motivação aqui, assim como eu encontrei em outros perfis do GitHub. Juntos, podemos construir uma comunidade de desenvolvedores dedicados à aprendizagem contínua e ao compartilhamento de conhecimento.
 
+[Requisitos funcionais e Nao funcionais especificados](https://docs.google.com/document/d/1-DHNGy-iUtoq8KvUlIttWqE8xrdg4BVKUiQXtYpF2Po/edit?usp=sharing)
 
+[Casos de uso do sistema](https://docs.google.com/document/d/12uDw5z9i3B65TwlCFK-Fe5ayhOZ5sWUwxUYTMFRHfg4/edit?usp=sharing)
