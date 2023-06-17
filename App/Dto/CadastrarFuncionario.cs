@@ -4,10 +4,13 @@ namespace App.Dto;
 
 public class CadastrarFuncionario
 {
-    public CadastrarFuncionario(string nome, string email, string senha, int cargoId)
+    private const string CpfRegex = @"^[0-9]{11}$";
+
+    public CadastrarFuncionario(string nome, string email, int cpf, string senha, int cargoId)
     {
         Nome = nome;
         Email = email;
+        Cpf = cpf;
         Senha = senha;
         CargoId = cargoId;
     }
@@ -20,6 +23,10 @@ public class CadastrarFuncionario
     [EmailAddress(ErrorMessage = "Email inválido")]
     [MaxLength(100, ErrorMessage = "Email deve conter no máximo 100 caracteres")]
     public string Email { get; set; }
+
+    [Required(ErrorMessage = "CPF é obrigatório")]
+    [RegularExpression(CpfRegex, ErrorMessage = "CPF inválido")]
+    public int Cpf { get; set; }
 
     [Required(ErrorMessage = "Senha é obrigatória")]
     [MinLength(6, ErrorMessage = "Senha deve conter no mínimo 6 caracteres")]
