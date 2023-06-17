@@ -99,7 +99,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         {
             using var connection = new NpgsqlConnection(_connectionString);
             var query =
-                "INSERT INTO Funcionario (nome, email, senha, idCargo) VALUES (@Nome, @Email, @Senha, @IdCargo) RETURNING *";
+                "INSERT INTO Funcionario (nome, email, cpf, senha, idCargo) VALUES (@Nome, @Email, @Cpf, @Senha, @IdCargo) RETURNING *";
 
             var funcionarioCadastrado =
                 await connection.QueryFirstOrDefaultAsync<FuncionarioEntity>(
@@ -108,6 +108,7 @@ public class FuncionarioRepository : IFuncionarioRepository
                     {
                         Nome = funcionario.Nome,
                         Email = funcionario.Email,
+                        Cpf = funcionario.Cpf,
                         Senha = funcionario.Senha,
                         IdCargo = funcionario.Cargo.Id
                     }

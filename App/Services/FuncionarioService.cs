@@ -53,6 +53,7 @@ namespace App.Services
 
             return ServiceResult<FuncionarioEntity>.Success(
                 new FuncionarioEntity(
+                    cpf: null,
                     id: funcionario.Value.Id,
                     nome: funcionario.Value.Nome,
                     email: funcionario.Value.Email,
@@ -86,6 +87,7 @@ namespace App.Services
                     id: funcionario.Value.Id,
                     nome: funcionario.Value.Nome,
                     email: funcionario.Value.Email,
+                    cpf: null,
                     senha: null,
                     cargo: funcionario.Value.Cargo
                 )
@@ -114,6 +116,7 @@ namespace App.Services
                 id: null,
                 nome: funcionarioInput.Nome,
                 email: funcionarioInput.Email,
+                cpf: funcionarioInput.Cpf,
                 senha: _cryptoService.HashPassword(funcionarioInput.Senha).Value,
                 cargo: cargo.Value
             );
@@ -132,6 +135,7 @@ namespace App.Services
                     id: funcionarioCadastrado.Value.Id,
                     nome: funcionarioCadastrado.Value.Nome,
                     email: funcionarioCadastrado.Value.Email,
+                    cpf: null,
                     senha: null,
                     cargo: funcionarioCadastrado.Value.Cargo
                 )
