@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using App;
-using App.Repositories;
-using App.Repositories.Interfaces;
 using App.Services;
 using App.Services.Interfaces;
+using App.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,16 +38,19 @@ app.Run();
 
 void ConfigureServices(IServiceCollection services)
 {
+    // Add database
+    services.AddDbContext<DataBaseContext>(o =>
+    {
+        o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    });
     // Login
     services.AddScoped<ITokenService, TokenService>();
     services.AddScoped<IFuncionarioService, FuncionarioService>();
-    services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
 
-    // Cargo
-    services.AddScoped<ICargoService, CargoService>();
-    services.AddScoped<ICargoRepository, CargoRepository>();
+    // crypto
     services.AddScoped<ICryptoService, Argon2Service>();
 
+    // Jwt
     var key = Encoding.ASCII.GetBytes(Settings.Secret);
     services
         .AddAuthentication(x =>

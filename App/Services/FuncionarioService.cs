@@ -1,143 +1,221 @@
 using App.Dto;
-using App.Entities;
-using App.Repositories.Interfaces;
 using App.Services.Results;
 using App.Services.Interfaces;
+using App.Models;
 
 namespace App.Services
 {
     public class FuncionarioService : IFuncionarioService
     {
-        private readonly IFuncionarioRepository _FuncionarioRepository;
-        private readonly ICargoService _cargoService;
         private readonly ICryptoService _cryptoService;
+        private readonly DataBaseContext _dataBaseContext;
 
-        public FuncionarioService(
-            IFuncionarioRepository FuncionarioRepository,
-            ICargoService cargoService,
-            ICryptoService cryptoService
-        )
+        public FuncionarioService(ICryptoService cryptoService, DataBaseContext dataBaseContext)
         {
-            _FuncionarioRepository = FuncionarioRepository;
-            _cargoService = cargoService;
             _cryptoService = cryptoService;
+            _dataBaseContext = dataBaseContext;
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> AtualizarFuncionarioAsync(
+        public async Task<ServiceResult<Funcionario>> AtualizarFuncionarioAsync(
             AtualizarFuncionario funcionarioInput
         )
         {
-            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloIdAsync(
-                funcionarioInput.Id
-            );
-            if (funcionario is null)
-                return ServiceResult<FuncionarioEntity>.Failure(
+            var funcionario = await _dataBaseContext.Funcionarios.FindAsync(funcionarioInput.Id);
+
+            if (funcionario is null || !funcionario.IsEnable)
+                return ServiceResult<Funcionario>.Failure(
                     "O Funcionário informado não existe em nosso sistema"
                 );
 
-            var cargo = await _cargoService.BuscarCargoPeloIdAsync(funcionarioInput.CargoId);
-            if (cargo is null)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Não foi possível encontrar o cargo informado"
-                );
+            _dataBaseContext.Funcionarios.Update(funcionario);
+            await _dataBaseContext.SaveChangesAsync();
 
-            funcionario.Value.Cargo = cargo.Value;
-            funcionario.Value.Nome = funcionarioInput.Nome;
-            var funcionarioAtualizado =
-                await _FuncionarioRepository.AtualizarDadosDoFuncionarioAsync(funcionario.Value);
-
-            if (funcionarioAtualizado is null)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Não foi possível atualizar os dados do funcionário"
-                );
-
-            return ServiceResult<FuncionarioEntity>.Success(
-                new FuncionarioEntity(
-                    cpf: null,
-                    id: funcionario.Value.Id,
-                    nome: funcionario.Value.Nome,
-                    email: funcionario.Value.Email,
-                    senha: null,
-                    cargo: funcionario.Value.Cargo
-                )
+            return ServiceResult<Funcionario>.Success(
+                new Funcionario()
+                {
+                    Id = funcionario.Id,
+                    Nome = funcionario.Nome,
+                    Email = funcionario.Email,
+                    Cargo = funcionario.Cargo
+                }
             );
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> AutenticarFuncionarioAsync(
+        public Task<ServiceResult<Funcionario>> AutenticarFuncionarioAsync(
             LoginFuncionario funcionarioInput
         )
         {
-            var funcionario = await _FuncionarioRepository.BuscarFuncionarioPeloEmailAsync(
-                funcionarioInput.Email
+            var funcionario = _dataBaseContext.Funcionarios.FirstOrDefault(
+                f => f.Email == funcionarioInput.Email && f.IsEnable
             );
 
-            if (funcionario is null || funcionario.Value.Senha is null)
-                return ServiceResult<FuncionarioEntity>.Failure("Usuário ou senha inválidos");
+            if (funcionario is null)
+                return Task.FromResult(
+                    ServiceResult<Funcionario>.Failure("Usuário ou senha inválidos")
+                );
 
             var senhaValida = _cryptoService.VerifyPassword(
                 funcionarioInput.Senha,
-                funcionario.Value.Senha
+                funcionario.Senha
             );
 
             if (!senhaValida.IsSuccess)
-                return ServiceResult<FuncionarioEntity>.Failure("Usuário ou senha inválidos");
+                return Task.FromResult(
+                    ServiceResult<Funcionario>.Failure("Usuário ou senha inválidos")
+                );
 
-            return ServiceResult<FuncionarioEntity>.Success(
-                new FuncionarioEntity(
-                    id: funcionario.Value.Id,
-                    nome: funcionario.Value.Nome,
-                    email: funcionario.Value.Email,
-                    cpf: null,
-                    senha: null,
-                    cargo: funcionario.Value.Cargo
+            return Task.FromResult(
+                ServiceResult<Funcionario>.Success(
+                    new Funcionario()
+                    {
+                        Id = funcionario.Id,
+                        Nome = funcionario.Nome,
+                        Email = funcionario.Email,
+                        Cargo = funcionario.Cargo
+                    }
                 )
             );
         }
 
-        public async Task<ServiceResult<FuncionarioEntity>> CadastrarFuncionarioAsync(
-            CadastrarFuncionario funcionarioInput
+        public async Task<ServiceResult<Funcionario>> CadastrarFuncionarioAsync(
+            Funcionario funcionarioInput
         )
         {
-            var funcionarioExistente = await _FuncionarioRepository.BuscarFuncionarioPeloEmailAsync(
-                funcionarioInput.Email
-            );
-            if (funcionarioExistente.Value is not null)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Este e-mail já está cadastrado no sistema"
-                );
-
-            var cargo = await _cargoService.BuscarCargoPeloIdAsync(funcionarioInput.CargoId);
-            if (cargo.Value is null)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Não foi possível encontrar o cargo informado"
-                );
-
-            var novoFuncionario = new FuncionarioEntity(
-                id: null,
-                nome: funcionarioInput.Nome,
-                email: funcionarioInput.Email,
-                cpf: funcionarioInput.Cpf,
-                senha: _cryptoService.HashPassword(funcionarioInput.Senha).Value,
-                cargo: cargo.Value
+            var funcionarioExistente = _dataBaseContext.Funcionarios.FirstOrDefault(
+                f =>
+                    f.Email == funcionarioInput.Email || f.Cpf == funcionarioInput.Cpf && f.IsEnable
             );
 
-            var funcionarioCadastrado = await _FuncionarioRepository.CadastrarFuncionarioAsync(
-                novoFuncionario
-            );
-
-            if (!funcionarioCadastrado.IsSuccess)
-                return ServiceResult<FuncionarioEntity>.Failure(
-                    "Não foi possível cadastrar o funcionário no banco de dados"
+            if (funcionarioExistente is not null)
+                return ServiceResult<Funcionario>.Failure(
+                    "Este usuário já está cadastrado em nosso sistema"
                 );
 
-            return ServiceResult<FuncionarioEntity>.Success(
-                new FuncionarioEntity(
-                    id: funcionarioCadastrado.Value.Id,
-                    nome: funcionarioCadastrado.Value.Nome,
-                    email: funcionarioCadastrado.Value.Email,
-                    cpf: null,
-                    senha: null,
-                    cargo: funcionarioCadastrado.Value.Cargo
+            var hashedPassword = _cryptoService.HashPassword(funcionarioInput.Senha);
+
+            if (!hashedPassword.IsSuccess)
+                return ServiceResult<Funcionario>.Failure(
+                    "Não foi possível cadastrar o usuário devido a um erro no servidor, tente novamente mais tarde"
+                );
+
+            funcionarioInput.Senha = hashedPassword.Value;
+
+            await _dataBaseContext.Funcionarios.AddAsync(funcionarioInput);
+
+            await _dataBaseContext.SaveChangesAsync();
+
+            return ServiceResult<Funcionario>.Success(
+                new Funcionario()
+                {
+                    Id = funcionarioInput.Id,
+                    Nome = funcionarioInput.Nome,
+                    Email = funcionarioInput.Email,
+                    Cargo = funcionarioInput.Cargo
+                }
+            );
+        }
+
+        public async Task<ServiceResult<Funcionario>> DesativarFuncionarioAsync(int id)
+        {
+            var funcionario = await _dataBaseContext.Funcionarios.FindAsync(id);
+
+            if (funcionario is null || !funcionario.IsEnable)
+                return ServiceResult<Funcionario>.Failure(
+                    "O Funcionário informado não existe em nosso sistema"
+                );
+
+            funcionario.IsEnable = false;
+
+            _dataBaseContext.Funcionarios.Update(funcionario);
+            await _dataBaseContext.SaveChangesAsync();
+
+            return ServiceResult<Funcionario>.Success(
+                new Funcionario()
+                {
+                    Id = funcionario.Id,
+                    Nome = funcionario.Nome,
+                    Email = funcionario.Email,
+                    Cargo = funcionario.Cargo
+                }
+            );
+        }
+
+        public Task<ServiceResult<Funcionario>> ObterFuncionarioAsync(int id)
+        {
+            var funcionario = _dataBaseContext.Funcionarios.FirstOrDefault(
+                f => f.Id == id && f.IsEnable
+            );
+
+            if (funcionario is null)
+                return Task.FromResult(
+                    ServiceResult<Funcionario>.Failure(
+                        "O Funcionário informado não existe em nosso sistema"
+                    )
+                );
+
+            return Task.FromResult(
+                ServiceResult<Funcionario>.Success(
+                    new Funcionario()
+                    {
+                        Id = funcionario.Id,
+                        Nome = funcionario.Nome,
+                        Email = funcionario.Email,
+                        Cargo = funcionario.Cargo
+                    }
+                )
+            );
+        }
+
+        public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync()
+        {
+            var funcionarios = _dataBaseContext.Funcionarios.Where(f => f.IsEnable);
+
+            if (!funcionarios.Any())
+                return Task.FromResult(
+                    ServiceResult<IEnumerable<Funcionario>>.Failure(
+                        "Não existem funcionários cadastrados em nosso sistema"
+                    )
+                );
+
+            return Task.FromResult(
+                ServiceResult<IEnumerable<Funcionario>>.Success(
+                    funcionarios.Select(
+                        f =>
+                            new Funcionario()
+                            {
+                                Id = f.Id,
+                                Nome = f.Nome,
+                                Email = f.Email,
+                                Cargo = f.Cargo
+                            }
+                    )
+                )
+            );
+        }
+
+        public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosDesativadosAsync()
+        {
+            var funcionarios = _dataBaseContext.Funcionarios.Where(f => !f.IsEnable);
+
+            if (!funcionarios.Any())
+                return Task.FromResult(
+                    ServiceResult<IEnumerable<Funcionario>>.Failure(
+                        "Não existem funcionários desativados em nosso sistema"
+                    )
+                );
+
+            return Task.FromResult(
+                ServiceResult<IEnumerable<Funcionario>>.Success(
+                    funcionarios.Select(
+                        f =>
+                            new Funcionario()
+                            {
+                                Id = f.Id,
+                                Nome = f.Nome,
+                                Email = f.Email,
+                                Cargo = f.Cargo
+                            }
+                    )
                 )
             );
         }

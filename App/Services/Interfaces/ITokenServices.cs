@@ -1,8 +1,8 @@
-using App.Entities;
+using App.Models;
 
 namespace App.Services.Interfaces;
 
 public interface ITokenService
 {
-    public string GenerateToken(FuncionarioEntity funcionario);
+    public string GenerateToken(Funcionario funcionario);
 }
