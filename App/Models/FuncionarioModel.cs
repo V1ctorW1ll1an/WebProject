@@ -37,5 +37,11 @@ public class Funcionario
 
     public Boolean IsEnable { get; set; } = true;
 
-    public Cargo Cargo { get; set; } = Cargo.Funcionario;
+    [Required(ErrorMessage = "Campo obrigatório")]
+    [Range(
+        1,
+        3,
+        ErrorMessage = "Você deve informar um cargo válido (Admin = 1, Tecnico = 2, Funcionario = 3)"
+    )]
+    public Cargo Cargo { get; set; }
 }

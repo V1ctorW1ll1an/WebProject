@@ -17,15 +17,30 @@ namespace App.Services
         }
 
         public async Task<ServiceResult<Funcionario>> AtualizarFuncionarioAsync(
-            AtualizarFuncionario funcionarioInput
+            Funcionario funcionarioInput,
+            int id
         )
         {
-            var funcionario = await _dataBaseContext.Funcionarios.FindAsync(funcionarioInput.Id);
+            // checked if id is empty
+            if (id == 0)
+                return ServiceResult<Funcionario>.Failure(
+                    "Por favor, informe o id do funcionário que deseja atualizar"
+                );
+
+            var funcionario = await _dataBaseContext.Funcionarios.FindAsync(id);
 
             if (funcionario is null || !funcionario.IsEnable)
                 return ServiceResult<Funcionario>.Failure(
                     "O Funcionário informado não existe em nosso sistema"
                 );
+
+            var newHashedPassword = _cryptoService.HashPassword(funcionarioInput.Senha);
+
+            funcionario.Nome = funcionarioInput.Nome;
+            funcionario.Email = funcionarioInput.Email;
+            funcionario.Cargo = funcionarioInput.Cargo;
+            funcionario.Cpf = funcionarioInput.Cpf;
+            funcionario.Senha = newHashedPassword.Value;
 
             _dataBaseContext.Funcionarios.Update(funcionario);
             await _dataBaseContext.SaveChangesAsync();
@@ -36,7 +51,8 @@ namespace App.Services
                     Id = funcionario.Id,
                     Nome = funcionario.Nome,
                     Email = funcionario.Email,
-                    Cargo = funcionario.Cargo
+                    Cargo = funcionario.Cargo,
+                    Cpf = funcionario.Cpf
                 }
             );
         }
@@ -71,7 +87,8 @@ namespace App.Services
                         Id = funcionario.Id,
                         Nome = funcionario.Nome,
                         Email = funcionario.Email,
-                        Cargo = funcionario.Cargo
+                        Cargo = funcionario.Cargo,
+                        Cpf = funcionario.Cpf
                     }
                 )
             );
@@ -110,7 +127,8 @@ namespace App.Services
                     Id = funcionarioInput.Id,
                     Nome = funcionarioInput.Nome,
                     Email = funcionarioInput.Email,
-                    Cargo = funcionarioInput.Cargo
+                    Cargo = funcionarioInput.Cargo,
+                    Cpf = funcionarioInput.Cpf
                 }
             );
         }
@@ -135,7 +153,8 @@ namespace App.Services
                     Id = funcionario.Id,
                     Nome = funcionario.Nome,
                     Email = funcionario.Email,
-                    Cargo = funcionario.Cargo
+                    Cargo = funcionario.Cargo,
+                    Cpf = funcionario.Cpf
                 }
             );
         }
@@ -160,7 +179,8 @@ namespace App.Services
                         Id = funcionario.Id,
                         Nome = funcionario.Nome,
                         Email = funcionario.Email,
-                        Cargo = funcionario.Cargo
+                        Cargo = funcionario.Cargo,
+                        Cpf = funcionario.Cpf
                     }
                 )
             );
@@ -186,7 +206,8 @@ namespace App.Services
                                 Id = f.Id,
                                 Nome = f.Nome,
                                 Email = f.Email,
-                                Cargo = f.Cargo
+                                Cargo = f.Cargo,
+                                Cpf = f.Cpf
                             }
                     )
                 )
@@ -213,7 +234,9 @@ namespace App.Services
                                 Id = f.Id,
                                 Nome = f.Nome,
                                 Email = f.Email,
-                                Cargo = f.Cargo
+                                Cargo = f.Cargo,
+                                Cpf = f.Cpf,
+                                IsEnable = f.IsEnable
                             }
                     )
                 )

@@ -1,5 +1,4 @@
-﻿using App.Dto;
-using App.Models;
+﻿using App.Models;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +43,8 @@ namespace App.Controllers
                             funcionario.Id,
                             funcionario.Nome,
                             funcionario.Email,
-                            funcionario.Cargo
+                            funcionario.Cargo,
+                            funcionario.Cpf
                         },
                         mensagem = "Funcionário cadastrado com sucesso"
                     }
@@ -75,7 +75,8 @@ namespace App.Controllers
                             funcionario.Id,
                             funcionario.Nome,
                             funcionario.Email,
-                            funcionario.Cargo
+                            funcionario.Cargo,
+                            funcionario.Cpf
                         }
                     }
                 );
@@ -107,7 +108,8 @@ namespace App.Controllers
                                     f.Id,
                                     f.Nome,
                                     f.Email,
-                                    f.Cargo
+                                    f.Cargo,
+                                    f.Cpf
                                 }
                         )
                     }
@@ -137,26 +139,71 @@ namespace App.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult<dynamic>> AtualizarFuncionarioAsync(
-            [FromBody] AtualizarFuncionario funcionarioForm
+            [FromBody] Funcionario funcionarioForm,
+            int id
         )
         {
             try
             {
                 var resultado = await _funcionarioService.AtualizarFuncionarioAsync(
-                    funcionarioForm
+                    funcionarioForm,
+                    id
                 );
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionario = resultado.Value;
+                var funcionario = new Funcionario
+                {
+                    Id = resultado.Value.Id,
+                    Nome = resultado.Value.Nome,
+                    Email = resultado.Value.Email,
+                    Cargo = resultado.Value.Cargo,
+                    Cpf = resultado.Value.Cpf
+                };
                 return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
             }
             catch (System.Exception)
             {
                 return BadRequest(new { mensagem = "Erro ao atualizar funcionário" });
+            }
+        }
+
+        [HttpGet]
+        [Route("desativados")]
+        public async Task<ActionResult<dynamic>> GetAllDisabledAsync()
+        {
+            try
+            {
+                var resultado = await _funcionarioService.ObterFuncionariosDesativadosAsync();
+
+                if (!resultado.IsSuccess)
+                    return BadRequest(new { mensagem = resultado.ErrorMessage });
+
+                var funcionarios = resultado.Value;
+                return Ok(
+                    new
+                    {
+                        funcionarios = funcionarios.Select(
+                            f =>
+                                new
+                                {
+                                    f.Id,
+                                    f.Nome,
+                                    f.Email,
+                                    f.Cargo,
+                                    f.Cpf,
+                                    f.IsEnable
+                                }
+                        )
+                    }
+                );
+            }
+            catch (System.Exception)
+            {
+                return BadRequest(new { mensagem = "Erro ao obter funcionários desativados" });
             }
         }
     }

@@ -11,7 +11,8 @@ public interface IFuncionarioService
     );
     public Task<ServiceResult<Funcionario>> CadastrarFuncionarioAsync(Funcionario funcionarioInput);
     public Task<ServiceResult<Funcionario>> AtualizarFuncionarioAsync(
-        AtualizarFuncionario funcionarioInput
+        Funcionario funcionarioInput,
+        int id
     );
     public Task<ServiceResult<Funcionario>> DesativarFuncionarioAsync(int id);
 
