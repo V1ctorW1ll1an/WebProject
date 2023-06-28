@@ -18,7 +18,10 @@ public interface IFuncionarioService
 
     public Task<ServiceResult<Funcionario>> ObterFuncionarioAsync(int id);
 
-    public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync();
+    public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync(
+        int pagina,
+        int tamanhoPagina
+    );
 
     public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosDesativadosAsync();
 }
