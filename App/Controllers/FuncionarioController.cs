@@ -88,11 +88,17 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<dynamic>> GetAllAsync()
+        public async Task<ActionResult<dynamic>> GetAllAsync(
+            [FromQuery] int pagina = 1,
+            [FromQuery] int tamanhoPagina = 10
+        )
         {
             try
             {
-                var resultado = await _funcionarioService.ObterFuncionariosAsync();
+                var resultado = await _funcionarioService.ObterFuncionariosAsync(
+                    pagina,
+                    tamanhoPagina
+                );
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });

@@ -186,9 +186,15 @@ namespace App.Services
             );
         }
 
-        public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync()
+        public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync(
+            int pagina,
+            int tamanhoPagina
+        )
         {
-            var funcionarios = _dataBaseContext.Funcionarios.Where(f => f.IsEnable);
+            var funcionarios = _dataBaseContext.Funcionarios
+                .Where(f => f.IsEnable)
+                .Skip((pagina - 1) * tamanhoPagina)
+                .Take(tamanhoPagina);
 
             if (!funcionarios.Any())
                 return Task.FromResult(
