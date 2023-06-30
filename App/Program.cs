@@ -34,6 +34,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// run migrations
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
+db.Database.Migrate();
+
 app.Run();
 
 void ConfigureServices(IServiceCollection services)
@@ -43,6 +48,7 @@ void ConfigureServices(IServiceCollection services)
     {
         o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     });
+
     // Login
     services.AddScoped<ITokenService, TokenService>();
     services.AddScoped<IUsuarioService, UsuarioService>();

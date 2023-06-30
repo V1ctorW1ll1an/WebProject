@@ -1,17 +1,8 @@
-version: "3"
+version: '3.4'
 
 services:
-  postgres:
-    container_name: postgres_container
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgresweb}
-      PGDATA: /data/postgres
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-
-networks:
-  postgres:
-    driver: bridge
+  app:
+    image: ${DOCKER_REGISTRY-}app
+    build:
+      context: .
+      dockerfile: App/Dockerfile
