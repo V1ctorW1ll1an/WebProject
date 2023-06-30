@@ -12,7 +12,7 @@ namespace App.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Funcionarios",
+                name: "Usuarios",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -22,11 +22,11 @@ namespace App.Migrations
                     Senha = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     Cpf = table.Column<long>(type: "bigint", nullable: false),
                     IsEnable = table.Column<bool>(type: "boolean", nullable: false),
-                    Cargo = table.Column<int>(type: "integer", nullable: false)
+                    NivelDeAcesso = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Funcionarios", x => x.Id);
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
                 });
         }
 
@@ -34,7 +34,7 @@ namespace App.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Funcionarios");
+                name: "Usuarios");
         }
     }
 }

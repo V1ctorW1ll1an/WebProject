@@ -1,50 +1,44 @@
 ﻿using App.Models;
 using App.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin,Tecnico")]
-    public class FuncionarioController : ControllerBase
+    // [Authorize(Roles = "Admin")]
+    public class UsuarioController : ControllerBase
     {
-        private readonly IFuncionarioService _funcionarioService;
-        private readonly ILogger<FuncionarioController> _logger;
+        private readonly IUsuarioService _usuarioService;
+        private readonly ILogger<UsuarioController> _logger;
 
-        public FuncionarioController(
-            IFuncionarioService funcionarioService,
-            ILogger<FuncionarioController> logger
-        )
+        public UsuarioController(IUsuarioService usuarioService, ILogger<UsuarioController> logger)
         {
-            _funcionarioService = funcionarioService;
+            _usuarioService = usuarioService;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult<dynamic>> AddAsync([FromBody] Funcionario funcionarioForm)
+        public async Task<ActionResult<dynamic>> AddAsync([FromBody] Usuario usuarioForm)
         {
             try
             {
-                var resultado = await _funcionarioService.CadastrarFuncionarioAsync(
-                    funcionarioForm
-                );
+                var resultado = await _usuarioService.CadastrarUsuarioAsync(usuarioForm);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionario = resultado.Value;
+                var usuario = resultado.Value;
                 return Ok(
                     new
                     {
-                        funcionario = new
+                        usuario = new
                         {
-                            funcionario.Id,
-                            funcionario.Nome,
-                            funcionario.Email,
-                            funcionario.Cargo,
-                            funcionario.Cpf
+                            usuario.Id,
+                            usuario.Nome,
+                            usuario.Email,
+                            usuario.NivelDeAcesso,
+                            usuario.Cpf
                         },
                         mensagem = "Funcionário cadastrado com sucesso"
                     }
@@ -61,22 +55,22 @@ namespace App.Controllers
         {
             try
             {
-                var resultado = await _funcionarioService.ObterFuncionarioAsync(id);
+                var resultado = await _usuarioService.ObterUsuarioAsync(id);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionario = resultado.Value;
+                var usuario = resultado.Value;
                 return Ok(
                     new
                     {
-                        funcionario = new
+                        usuario = new
                         {
-                            funcionario.Id,
-                            funcionario.Nome,
-                            funcionario.Email,
-                            funcionario.Cargo,
-                            funcionario.Cpf
+                            usuario.Id,
+                            usuario.Nome,
+                            usuario.Email,
+                            usuario.NivelDeAcesso,
+                            usuario.Cpf
                         }
                     }
                 );
@@ -95,26 +89,23 @@ namespace App.Controllers
         {
             try
             {
-                var resultado = await _funcionarioService.ObterFuncionariosAsync(
-                    pagina,
-                    tamanhoPagina
-                );
+                var resultado = await _usuarioService.ObterUsuariosAsync(pagina, tamanhoPagina);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionarios = resultado.Value;
+                var usuarios = resultado.Value;
                 return Ok(
                     new
                     {
-                        funcionarios = funcionarios.Select(
+                        usuarios = usuarios.Select(
                             f =>
                                 new
                                 {
                                     f.Id,
                                     f.Nome,
                                     f.Email,
-                                    f.Cargo,
+                                    f.NivelDeAcesso,
                                     f.Cpf
                                 }
                         )
@@ -132,7 +123,7 @@ namespace App.Controllers
         {
             try
             {
-                var resultado = await _funcionarioService.DesativarFuncionarioAsync(id);
+                var resultado = await _usuarioService.DesativarUsuarioAsync(id);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
@@ -146,30 +137,27 @@ namespace App.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<dynamic>> AtualizarFuncionarioAsync(
-            [FromBody] Funcionario funcionarioForm,
+        public async Task<ActionResult<dynamic>> AtualizarUsuarioAsync(
+            [FromBody] Usuario usuarioForm,
             int id
         )
         {
             try
             {
-                var resultado = await _funcionarioService.AtualizarFuncionarioAsync(
-                    funcionarioForm,
-                    id
-                );
+                var resultado = await _usuarioService.AtualizarUsuarioAsync(usuarioForm, id);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionario = new Funcionario
+                var usuario = new Usuario
                 {
                     Id = resultado.Value.Id,
                     Nome = resultado.Value.Nome,
                     Email = resultado.Value.Email,
-                    Cargo = resultado.Value.Cargo,
+                    NivelDeAcesso = resultado.Value.NivelDeAcesso,
                     Cpf = resultado.Value.Cpf
                 };
-                return Ok(new { funcionario, mensagem = "Funcionário atualizado com sucesso" });
+                return Ok(new { usuario, mensagem = "Funcionário atualizado com sucesso" });
             }
             catch (System.Exception)
             {
@@ -183,23 +171,23 @@ namespace App.Controllers
         {
             try
             {
-                var resultado = await _funcionarioService.ObterFuncionariosDesativadosAsync();
+                var resultado = await _usuarioService.ObterUsuariosDesativadosAsync();
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionarios = resultado.Value;
+                var usuarios = resultado.Value;
                 return Ok(
                     new
                     {
-                        funcionarios = funcionarios.Select(
+                        usuarios = usuarios.Select(
                             f =>
                                 new
                                 {
                                     f.Id,
                                     f.Nome,
                                     f.Email,
-                                    f.Cargo,
+                                    f.NivelDeAcesso,
                                     f.Cpf,
                                     f.IsEnable
                                 }

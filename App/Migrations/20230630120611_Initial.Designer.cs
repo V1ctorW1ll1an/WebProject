@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20230625180721_UpdateCargos")]
-    partial class UpdateCargos
+    [Migration("20230630120611_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,16 +24,13 @@ namespace App.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("App.Models.Funcionario", b =>
+            modelBuilder.Entity("App.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Cargo")
-                        .HasColumnType("integer");
 
                     b.Property<long>("Cpf")
                         .HasColumnType("bigint");
@@ -45,6 +42,9 @@ namespace App.Migrations
 
                     b.Property<bool>("IsEnable")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("NivelDeAcesso")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -58,7 +58,7 @@ namespace App.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Funcionarios");
+                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }

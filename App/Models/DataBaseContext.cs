@@ -7,5 +7,5 @@ public class DataBaseContext : DbContext
     public DataBaseContext(DbContextOptions<DataBaseContext> options)
         : base(options) { }
 
-    public DbSet<Funcionario> Funcionarios { get; set; } = null!;
+    public DbSet<Usuario> Usuarios { get; set; } = null!;
 }

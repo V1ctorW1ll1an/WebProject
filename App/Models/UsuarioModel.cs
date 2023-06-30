@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace App.Models;
 
-public class Funcionario
+public class Usuario
 {
     public int Id { get; set; }
 
@@ -41,7 +41,7 @@ public class Funcionario
     [Range(
         1,
         3,
-        ErrorMessage = "Você deve informar um cargo válido (Admin = 1, Tecnico = 2, Funcionario = 3)"
+        ErrorMessage = "Você deve informar um cargo válido (Admin = 1, Tecnico = 2, Usuario = 3)"
     )]
-    public Cargo Cargo { get; set; }
+    public NivelDeAcesso NivelDeAcesso { get; set; }
 }

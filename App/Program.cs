@@ -45,7 +45,7 @@ void ConfigureServices(IServiceCollection services)
     });
     // Login
     services.AddScoped<ITokenService, TokenService>();
-    services.AddScoped<IFuncionarioService, FuncionarioService>();
+    services.AddScoped<IUsuarioService, UsuarioService>();
 
     // crypto
     services.AddScoped<ICryptoService, Argon2Service>();

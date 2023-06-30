@@ -9,7 +9,7 @@ namespace App.Services;
 
 public class TokenService : ITokenService
 {
-    public string GenerateToken(Funcionario funcionario)
+    public string GenerateToken(Usuario usuario)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(Settings.Secret);
@@ -18,8 +18,8 @@ public class TokenService : ITokenService
             Subject = new ClaimsIdentity(
                 new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, funcionario.Nome.ToString()), // User.Identity.Name
-                    new Claim(ClaimTypes.Role, funcionario.Cargo.ToString()) // User.IsInRole("1")
+                    new Claim(ClaimTypes.Name, usuario.Nome.ToString()), // User.Identity.Name
+                    new Claim(ClaimTypes.Role, usuario.NivelDeAcesso.ToString()) // User.IsInRole("1")
                 }
             ),
             Expires = DateTime.UtcNow.AddHours(40),

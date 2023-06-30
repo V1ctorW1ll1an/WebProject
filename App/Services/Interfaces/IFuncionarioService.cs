@@ -4,24 +4,19 @@ using App.Services.Results;
 
 namespace App.Services.Interfaces;
 
-public interface IFuncionarioService
+public interface IUsuarioService
 {
-    public Task<ServiceResult<Funcionario>> AutenticarFuncionarioAsync(
-        LoginFuncionario funcionarioInput
-    );
-    public Task<ServiceResult<Funcionario>> CadastrarFuncionarioAsync(Funcionario funcionarioInput);
-    public Task<ServiceResult<Funcionario>> AtualizarFuncionarioAsync(
-        Funcionario funcionarioInput,
-        int id
-    );
-    public Task<ServiceResult<Funcionario>> DesativarFuncionarioAsync(int id);
+    public Task<ServiceResult<Usuario>> AutenticarUsuarioAsync(LoginUsuario usuarioInput);
+    public Task<ServiceResult<Usuario>> CadastrarUsuarioAsync(Usuario usuarioInput);
+    public Task<ServiceResult<Usuario>> AtualizarUsuarioAsync(Usuario usuarioInput, int id);
+    public Task<ServiceResult<Usuario>> DesativarUsuarioAsync(int id);
 
-    public Task<ServiceResult<Funcionario>> ObterFuncionarioAsync(int id);
+    public Task<ServiceResult<Usuario>> ObterUsuarioAsync(int id);
 
-    public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosAsync(
+    public Task<ServiceResult<IEnumerable<Usuario>>> ObterUsuariosAsync(
         int pagina,
         int tamanhoPagina
     );
 
-    public Task<ServiceResult<IEnumerable<Funcionario>>> ObterFuncionariosDesativadosAsync();
+    public Task<ServiceResult<IEnumerable<Usuario>>> ObterUsuariosDesativadosAsync();
 }

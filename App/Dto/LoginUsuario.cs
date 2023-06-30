@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace App.Dto;
 
-public class LoginFuncionario
+public class LoginUsuario
 {
-    public LoginFuncionario(string email, string senha)
+    public LoginUsuario(string email, string senha)
     {
         Email = email;
         Senha = senha;

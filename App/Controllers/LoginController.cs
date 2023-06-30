@@ -10,47 +10,45 @@ namespace App.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private readonly IFuncionarioService _funcionarioService;
+        private readonly IUsuarioService _usuarioService;
 
-        public LoginController(IFuncionarioService funcionarioService, ITokenService tokenService)
+        public LoginController(IUsuarioService usuarioService, ITokenService tokenService)
         {
             _tokenService = tokenService;
-            _funcionarioService = funcionarioService;
+            _usuarioService = usuarioService;
         }
 
         [HttpPost]
         [Route("login")]
         [AllowAnonymous]
         public async Task<ActionResult<dynamic>> AuthenticateAsync(
-            [FromBody] LoginFuncionario funcionarioForm
+            [FromBody] LoginUsuario usuarioForm
         )
         {
             try
             {
-                var resultado = await _funcionarioService.AutenticarFuncionarioAsync(
-                    funcionarioForm
-                );
+                var resultado = await _usuarioService.AutenticarUsuarioAsync(usuarioForm);
 
                 if (!resultado.IsSuccess)
                     return BadRequest(new { mensagem = resultado.ErrorMessage });
 
-                var funcionario = resultado.Value;
+                var usuario = resultado.Value;
 
-                var token = _tokenService.GenerateToken(funcionario);
+                var token = _tokenService.GenerateToken(usuario);
 
-                var novoFuncionario = new
+                var novoUsuario = new
                 {
-                    funcionario.Id,
-                    funcionario.Nome,
-                    funcionario.Email,
-                    funcionario.Cargo,
+                    usuario.Id,
+                    usuario.Nome,
+                    usuario.Email,
+                    usuario.NivelDeAcesso,
                 };
 
-                return new { funcionario = novoFuncionario, token };
+                return new { usuario = novoUsuario, token };
             }
             catch (System.Exception)
             {
-                return BadRequest(new { mensagem = "Erro ao autenticar funcionário" });
+                return BadRequest(new { mensagem = "Erro ao autenticar usuario" });
             }
         }
     }
