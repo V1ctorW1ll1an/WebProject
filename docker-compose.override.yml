@@ -8,6 +8,8 @@ services:
     ports:
       - 65258:443
       - 65257:80
+    expose:
+      - 443
     volumes:
       - ~/.aspnet/https:/root/.aspnet/https:ro
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
